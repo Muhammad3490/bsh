@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
         cb(null, 'themeUploads');
     },
     filename: function (req, file, cb) {
-        cb(null, `https://bsh.onrender.com/${Date.now()}_${file.originalname}`);
+        cb(null, `${Date.now()}_${file.originalname}`);
         // corrected from file.filename to file.originalname
     }
 });
