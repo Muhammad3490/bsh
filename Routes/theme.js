@@ -4,7 +4,7 @@ const multer  = require('multer');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'themeUploads');
+        cb(null, 'ThemeUploads');
     },
     filename: function (req, file, cb) {
         cb(null, `${Date.now()}-${file.originalname}`); // corrected from file.filename to file.originalname
