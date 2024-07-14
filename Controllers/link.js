@@ -1,5 +1,6 @@
 const Link = require("../Models/Link");
 const User = require("../Models/User");
+
 const postLink = async (req, res) => {
   try {
     const { name, url, ownerId, icon } = req.body;
@@ -37,38 +38,38 @@ const postLink = async (req, res) => {
 };
 
 const patchLink = async (req, res) => {
+  const { updates, userId, linkId } = req.body;
+
+  if (!updates || !userId || !linkId) {
+    return res.status(400).json({ status: "error", message: "Invalid request" });
+  }
+
   try {
-    const { fieldName, fieldValue, linkId } = req.body;
-    if ((fieldName, fieldValue, linkId)) {
-      const filter = { _id: linkId };
-      const values = { $set: { [fieldName]: fieldValue } };
-      try {
-        const result = await Link.updateOne(filter, values);
-        if (result.modifiedCount > 0) {
-          return res.json({
-            status: "success",
-            message: "Updated the link sucessfully ",
-          });
-        }
-      } catch (error) {
-        return res.json({
-          status: "failed",
-          message: `Unable to update ${fieldName}`,
-          error: error,
-        });
-      }
+    const checkOwner = await User.findById(userId);
+    if (!checkOwner) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+
+    const filter = { ownerId: userId, _id: linkId };
+    const update = { $set: updates };
+    const result = await Link.updateOne(filter, update);
+
+    if (result.modifiedCount > 0) {
+      return res.json({ status: "success", link: result });
+    } else {
+      return res.json({ status: "error", message: "Link update failed" });
     }
   } catch (error) {
-    return res.json({
-      status: "failed",
-      message: `Unable to update ${fieldName}`,
-      error: error,
-    });
+    console.error("Error updating link:", error);
+    return res.status(500).json({ status: "error", message: "Internal server error" });
   }
 };
 
+
+
 const deleteLink = async (req, res) => {
   try {
+    console.log("Working 1");
     const { linkId } = req.body;
     if (linkId) {
       const filter = { _id: linkId };
@@ -80,7 +81,9 @@ const deleteLink = async (req, res) => {
             message: "Deleted link successful",
           });
         }
+
       } catch (error) {
+        console.log("Working 2")
         return res.json({
           status: "failed",
           message: "Unable to delete the link",
@@ -89,6 +92,8 @@ const deleteLink = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log("Working 2")
+
     return res.json({
       status: "failed",
       message: "Unable to delete the link",
@@ -130,18 +135,17 @@ const getLinks = async (req, res) => {
   }
 };
 
+// Backend route to fetch user links
 const getUserLinks = async (req, res) => {
   try {
-    const { ownerId } = req.body;
+    const { userId } = req.params;
 
     // Ensure checkOwner is awaited
-    const checkOwner = await User.findById(ownerId);
+    const checkOwner = await User.findById(userId);
 
     if (checkOwner) {
       try {
-        const filter = { ownerId: ownerId };
-
-        // Use Link.find instead of findMany
+        const filter = { ownerId: userId };
         const result = await Link.find(filter);
 
         if (result && result.length > 0) {
@@ -167,6 +171,50 @@ const getUserLinks = async (req, res) => {
     });
   }
 };
+const getUserLinksLimit = async (req, res) => {
+  try {
+    const { userId, limit } = req.params;
+
+    // Ensure checkOwner is awaited
+    const checkOwner = await User.findById(userId);
+
+    if (checkOwner) {
+      try {
+        const filter = { ownerId: userId };
+        const result = await Link.find(filter).limit(Number(limit));
+
+        if (result && result.length > 0) {
+          return res.json({ status: "success", links: result });
+        } else {
+          return res.json({ status: "success", message: "User has no links" });
+        }
+      } catch (error) {
+        return res.json({
+          status: "failed",
+          message: "Unable to fetch links",
+          error: error.message,
+        });
+      }
+    } else {
+      return res.json({ status: "failed", message: "Unable to find user" });
+    }
+  } catch (error) {
+    return res.json({
+      status: "failed",
+      message: "An error occurred",
+      error: error.message,
+    });
+  }
+};
+
+const viewLinks = async (req, res) => {
+  try {
+    const links = await Link.find({}); // Fetch all links, adjust as needed
+    res.render('Links/index', { title: 'All Links', links });
+  } catch (error) {
+    res.status(500).send("Error rendering links page: " + error.message);
+  }
+};
 
 module.exports = {
   postLink,
@@ -175,4 +223,6 @@ module.exports = {
   getLink,
   getLinks,
   getUserLinks,
+  getUserLinksLimit,
+  viewLinks
 };

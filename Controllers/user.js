@@ -1,70 +1,88 @@
 const User = require("../Models/User");
 
 const postUser = async (req, res) => {
-  try {
-    const { name, email, emailVerified, picture } = req.body;
-    if (name && email && picture && emailVerified) {
-      const newUser = await User.create({
-        name,
-        email,
-        emailVerified,
-        picture,
-      });
-      console.log("New user", newUser);
-      return res.json({
-        message: "Added user successfully",
-        userId: newUser._id,
-      });
-    } else {
-      return res
-        .status(400)
-        .json({ error: "Unable to add user (invalid fields)." });
+    const { email, name, emailVerified, picture } = req.body;
+  
+    // Check if email is provided
+    if (!email) {
+      return res.status(400).json({ error: "Email is required." });
     }
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Unable to add user", details: error.message });
-  }
-};
-
-const patchUser = async (req, res) => {
-  try {
-    const { fieldName, fieldValue, userId } = req.body;
-    if (fieldName != null && fieldValue != null && userId != null) {
-      const filter = { _id: userId };
-      const values = { $set: { [fieldName]: fieldValue } };
-      try {
-        const result = await User.updateOne(filter, values);
-        if (result.modifiedCount > 0) {
+  
+    try {
+      const checkUser = await User.findOne({ email: email });
+  
+      if (!checkUser) {
+        // Validate required fields for creating a new user
+        if (name && email && picture && emailVerified) {
+          const newUser = await User.create({
+            name,
+            email,
+            emailVerified,
+            picture,
+          });
+          console.log("New user", newUser);
           return res.json({
-            status: "Success",
-            message: `${fieldName} updated successfully `,
+            message: "Added user successfully",
+            user: newUser,
           });
         } else {
-          return res.json({
-            status: "Failed",
-            message: `Unable to updated ${fieldName} (DB error)`,
-          });
+          return res
+            .status(400)
+            .json({ error: "Unable to add user (invalid fields)." });
         }
-      } catch (error) {
+      } else {
         return res.json({
-          status: "Failed",
-          message: `Unable to updated ${fieldName} (DB error)`,
+          status: "success",
+          message: "User already exists",
+          user: checkUser,
         });
       }
-    } else {
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ error: "Unable to add user", details: error.message });
+    }
+  };
+  
+  const patchUser = async (req, res) => {
+    try {
+      const { updates, userId } = req.body;
+      if (updates != null && userId != null) {
+        const filter = { _id: userId };
+        const values = { $set: updates };
+        try {
+          const result = await User.updateOne(filter, values);
+          if (result.modifiedCount > 0) {
+            return res.json({
+              status: "Success",
+              message: "User updated successfully",
+            });
+          } else {
+            return res.json({
+              status: "Failed",
+              message: "Unable to update user (DB error)",
+            });
+          }
+        } catch (error) {
+          return res.json({
+            status: "Failed",
+            message: "Unable to update user (DB error)",
+          });
+        }
+      } else {
+        return res.json({
+          status: "Failed",
+          message: "Unable to update user (Missing fields)",
+        });
+      }
+    } catch (error) {
       return res.json({
         status: "Failed",
-        message: `Unable to updated ${fieldName} (Missing fields)`,
+        message: "Unable to update user (Missing fields)",
       });
     }
-  } catch (error) {
-    return res.json({
-      status: "Failed",
-      message: `Unable to updated ${fieldName} (Missing fields)`,
-    });
-  }
-};
+  };
+  
 const deleteUser = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -131,7 +149,5 @@ const getAllUsers = async (req, res) => {
     return res.json({ status: "success", message: "Unable to fetch users" });
   }
 };
-
-
 
 module.exports = { postUser, patchUser, deleteUser, getUser, getAllUsers };

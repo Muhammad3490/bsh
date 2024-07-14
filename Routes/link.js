@@ -7,6 +7,8 @@ const {
   getLink,
   getLinks,
   getUserLinks,
+  getUserLinksLimit,
+  viewLinks
 } = require("../Controllers/link");
 //post req
 router.post("/", postLink);
@@ -19,5 +21,9 @@ router.get("/", getLink);
 //get all
 router.get("/all", getLinks);
 //get user links
-router.get("/user", getUserLinks);
+router.get("/:userId", getUserLinks);
+//router limit
+router.get("/:userId/:limit",getUserLinksLimit);
+//view 
+router.get('/view',viewLinks);
 module.exports = router;
