@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:css": "npx tailwindcss -i ./public/css/styles.css -o ./public/css/output.css --watch"
-
+    "build:css": "npx tailwindcss -i ./public/css/styles.css -o ./public/css/output.css --watch",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
