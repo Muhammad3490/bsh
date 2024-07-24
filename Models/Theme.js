@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const themeSchema = new mongoose.Schema({
+  userId:{
+    type:String
+  },
   type: {
     type: String,
     enum: ["predefined", "custom"],
@@ -18,8 +21,12 @@ const themeSchema = new mongoose.Schema({
     type: String,
     ref: "User",
   }, // Only for custom themes
-  backgroundImageUrl: String, // URL for the background image
-  previewImageUrl: String, // URL for the preview image
+  backgroundImageUrl: String,
+  previewImageUrl: String, 
+  buttonColor:String,
+  buttonBg:String,
+  background:String,
+  buttonBorder:String
 });
 
 module.exports = mongoose.model("Theme", themeSchema);

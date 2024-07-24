@@ -53,9 +53,11 @@ const postUser = async (req, res) => {
         try {
           const result = await User.updateOne(filter, values);
           if (result.modifiedCount > 0) {
+            const editedUser=await User.findById(userId);
             return res.json({
-              status: "Success",
+              status: "success",
               message: "User updated successfully",
+              user:editedUser
             });
           } else {
             return res.json({
