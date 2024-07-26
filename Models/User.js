@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema(
   {
+    userName:{
+      type:String,
+    },
     name: {
       type: String,
       required: true,
@@ -34,6 +37,10 @@ const UserSchema = new mongoose.Schema(
     Profession: {
       type: String,
     },
+    new:{
+      type:Boolean,
+      default:true
+    }
   },
   { timestamps: true }
 );

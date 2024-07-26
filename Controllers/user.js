@@ -19,6 +19,7 @@ const postUser = async (req, res) => {
             email,
             emailVerified,
             picture,
+            userName:email
           });
           console.log("New user", newUser);
           return res.json({

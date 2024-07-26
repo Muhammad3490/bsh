@@ -26,7 +26,8 @@ const themeSchema = new mongoose.Schema({
   buttonColor:String,
   buttonBg:String,
   background:String,
-  buttonBorder:String
+  buttonBorder:String,
+  buttonRadius:String
 });
 
 module.exports = mongoose.model("Theme", themeSchema);
