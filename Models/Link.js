@@ -16,8 +16,8 @@ const LinkSchema = new mongoose.Schema({
     type: String,
   },
   clicks: {
-    type: String,
-    require: true,
+    type: Number,
+    default:0
   },
 });
 

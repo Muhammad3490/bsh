@@ -22,6 +22,8 @@ const {
   patchSelectedTheme,
   patchTheme,
   getuserTheme,
+  getSelectedThemeByUsername,
+  createTheme
 } = require("../Controllers/theme");
 router.patch('/',patchTheme)
 router.get("/", getThemes);
@@ -36,4 +38,6 @@ router.get("/");
 router.post("/selected", postSelectedTheme);
 router.patch("/selected", patchSelectedTheme);
 router.get("/selected/:userId", getSelectedTheme);
+router.get("/selected/:userName", getSelectedThemeByUsername);
+router.post('/new',createTheme);
 module.exports = router;

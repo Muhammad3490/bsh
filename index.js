@@ -21,10 +21,12 @@ app.set("views", path.join(__dirname, "View"));
 // Import and use routers
 const userRouter = require("./Routes/user");
 const linkRouter = require("./Routes/link");
-const themeRouter=require('./Routes/theme')
+const themeRouter=require('./Routes/theme');
+const userPageRouter=require("./Routes/view")
 app.use("/user", userRouter);
 app.use("/link", linkRouter);
 app.use('/theme',themeRouter);
+app.use('/',userPageRouter);
 mongoose.set("strictQuery", false);
 
 // Connect to MongoDB

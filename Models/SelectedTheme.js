@@ -4,7 +4,6 @@ const Schema=new mongoose.Schema({
     userId:{
         type:String,
         required:true,
-        unique:true
     },
     themeId:{
         type:String,

@@ -3,7 +3,7 @@ const multer = require("multer");
 const upload = multer({ dest: "Themeuploads/" });
 const User = require("../Models/User");
 const SelectedTheme = require("../Models/SelectedTheme");
-const mongoose=require('mongoose')
+const mongoose = require("mongoose");
 const getThemes = async (req, res) => {
   try {
     const themes = await Theme.find({});
@@ -24,8 +24,17 @@ const viewForm = async (req, res) => {
   }
 };
 const postTheme = async (req, res) => {
-  const { type, name, backgroundColor, textColor, font, buttonStyle, userId,buttonColor,alignment } =
-    req.body;
+  const {
+    type,
+    name,
+    backgroundColor,
+    textColor,
+    font,
+    buttonStyle,
+    userId,
+    buttonColor,
+    alignment,
+  } = req.body;
 
   if (!type || !name) {
     return res.status(400).json({ error: "Type and name are required" });
@@ -48,8 +57,8 @@ const postTheme = async (req, res) => {
     previewImageUrl: req.files.previewImage
       ? `/themeUploads/${req.files.previewImage[0].filename}`
       : null,
-      buttonColor,
-      alignment
+    buttonColor,
+    alignment,
   });
 
   if (type === "custom") {
@@ -76,6 +85,41 @@ const postTheme = async (req, res) => {
       .json({ error: "An error occurred while creating the theme" });
   }
 };
+
+const createTheme = async (req,res) => {
+  const { name, userId } = req.body;
+  console.log(req.body)
+  if (!name || !userId) {
+    return res.json({ status: "failed", error: "Missing fields" });
+  }
+  try {
+    const newTheme = await Theme.create({
+      ownerId: userId,
+      name: name,
+      type: "custom",
+    });
+    if (newTheme) {
+      const select = await SelectedTheme.create({
+        themeId: newTheme._id,
+        userId: userId,
+        selected:true
+      });
+      if (select) {
+        return res.json({
+          status: "success",
+          message: "Theme created successfully",
+          data:newTheme
+        });
+      } else {
+        return res.json({ status: "failed", error: "Unable to select theme" });
+      }
+    } else {
+      return res.json({ status: "failed", error: "Unable to create theme" });
+    }
+  } catch (error) {
+    return res.json({ status: "failed", error: error });
+  }
+};
 const patchTheme = async (req, res) => {
   const { _id: themeId, ...updates } = req.body;
   console.log(req.body);
@@ -92,12 +136,16 @@ const patchTheme = async (req, res) => {
         return res.json({ status: "failed", message: "No theme was updated." });
       }
     } catch (error) {
-      return res.json({ status: "failed", error: error.message, message: "Unable to patch." });
+      return res.json({
+        status: "failed",
+        error: error.message,
+        message: "Unable to patch.",
+      });
     }
   }
 
   return res.json({ status: "failed", error: "Missing fields" });
-}
+};
 const postSelectedTheme = async (req, res) => {
   const { userId, themeId } = req.body;
 
@@ -154,9 +202,9 @@ const patchSelectedTheme = async (req, res) => {
         error: "No selected theme found for the provided _id",
       });
     }
-    const values={themeId:themeId}
-     const updateResult=await SelectedTheme.findByIdAndUpdate(_id,values);
-     console.log("Update Result",updateResult);
+    const values = { themeId: themeId };
+    const updateResult = await SelectedTheme.findByIdAndUpdate(_id, values);
+    console.log("Update Result", updateResult);
     if (updateResult) {
       return res.json({
         status: "success",
@@ -177,38 +225,49 @@ const patchSelectedTheme = async (req, res) => {
   }
 };
 
-
-
-
-
 const getSelectedTheme = async (req, res) => {
-    const { userId } = req.params;
-    if (!userId) {
-        return res.json({ status: "failed", message: "User ID is empty" });
+  const { userId } = req.params;
+  if (!userId) {
+    return res.json({ status: "failed", message: "User ID is empty" });
+  }
+
+  try {
+    const selectedTheme = await SelectedTheme.findOne({ userId });
+    if (!selectedTheme) {
+      return res.json({
+        status: "failed",
+        message: "Error in finding selected theme",
+      });
     }
 
-    try {
-        const selectedTheme = await SelectedTheme.findOne({ userId });
-        if (!selectedTheme) {
-            return res.json({ status: "failed", message: "Error in finding selected theme" });
-        }
+    const themeId = selectedTheme.themeId.trim();
 
-        const themeId = selectedTheme.themeId.trim();
-
-        if (!mongoose.Types.ObjectId.isValid(themeId)) {
-            return res.json({ status: "failed", message: "Invalid theme ID format" });
-        }
-
-        const response = await Theme.findById(themeId);
-        if (response) {
-            return res.json({ status: "success", theme: response,selectedId:response._id,_id:selectedTheme._id});
-        } else {
-            return res.json({ status: "failed", message: "Unable to get selected theme" });
-        }
-    } catch (error) {
-        console.error("Error fetching selected theme:", error);
-        return res.json({ status: "failed", message: "Unable to get selected theme", error });
+    if (!mongoose.Types.ObjectId.isValid(themeId)) {
+      return res.json({ status: "failed", message: "Invalid theme ID format" });
     }
+
+    const response = await Theme.findById(themeId);
+    if (response) {
+      return res.json({
+        status: "success",
+        theme: response,
+        selectedId: response._id,
+        _id: selectedTheme._id,
+      });
+    } else {
+      return res.json({
+        status: "failed",
+        message: "Unable to get selected theme",
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching selected theme:", error);
+    return res.json({
+      status: "failed",
+      message: "Unable to get selected theme",
+      error,
+    });
+  }
 };
 
 const getuserTheme = async (req, res) => {
@@ -218,9 +277,12 @@ const getuserTheme = async (req, res) => {
       const filter = { userId: userId };
       const selectedtheme = await Theme.findOne(filter);
       if (selectedtheme) {
-        return res.json({ status: "success", theme: selectedtheme });
+        return res.json({ status: "success", data: selectedtheme });
       } else {
-        return res.json({ status: "failed", message: "No theme found for this user." });
+        return res.json({
+          status: "failed",
+          message: "No theme found for this user.",
+        });
       }
     } catch (error) {
       return res.json({ status: "failed", error: error.message });
@@ -230,8 +292,35 @@ const getuserTheme = async (req, res) => {
   }
 };
 
+const getSelectedThemeByUsername = async (req, res) => {
+  const { userName } = req.params;
 
+  if (!userName) {
+    return res.json({ status: "failed", error: "User name is not provided" });
+  }
 
+  try {
+    const user = await User.findOne({ userName });
+    if (!user) {
+      return res.json({ status: "failed", message: "User not found" });
+    }
+
+    const userId = user._id;
+    const filter = { userId };
+    const selectedTheme = await Theme.findOne(filter);
+
+    if (selectedTheme) {
+      return res.json({ status: "success", theme: selectedTheme });
+    } else {
+      return res.json({
+        status: "failed",
+        message: "No theme found for this user.",
+      });
+    }
+  } catch (error) {
+    return res.json({ status: "failed", error: error.message });
+  }
+};
 
 module.exports = {
   getThemes,
@@ -241,5 +330,7 @@ module.exports = {
   patchSelectedTheme,
   getSelectedTheme,
   patchTheme,
-  getuserTheme
+  getuserTheme,
+  getSelectedThemeByUsername,
+  createTheme
 };

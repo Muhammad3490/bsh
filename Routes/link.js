@@ -8,7 +8,8 @@ const {
   getLinks,
   getUserLinks,
   getUserLinksLimit,
-  viewLinks
+  viewLinks,
+  incrementClicks
 } = require("../Controllers/link");
 //post req
 router.post("/", postLink);
@@ -24,6 +25,7 @@ router.get("/all", getLinks);
 router.get("/:userId", getUserLinks);
 //router limit
 router.get("/:userId/:limit",getUserLinksLimit);
+router.post('/click',incrementClicks);
 //view 
 router.get('/view',viewLinks);
 module.exports = router;

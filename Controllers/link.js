@@ -3,21 +3,20 @@ const User = require("../Models/User");
 
 const postLink = async (req, res) => {
   try {
-    const { name, url, ownerId, icon } = req.body;
+    const { name, url,ownerId} = req.body;
     const checkUser = User.findById(ownerId);
-    if ((name, url, checkUser, icon)) {
+    if (name, url, checkUser) {
       try {
         const result = await Link.create({
           name,
           url,
           ownerId,
-          icon,
         });
         if (result) {
           return res.json({
             status: "success",
             message: "successfully created link",
-            link: result,
+            data: result,
           });
         }
       } catch (error) {
@@ -67,37 +66,46 @@ const patchLink = async (req, res) => {
 
 
 
+
 const deleteLink = async (req, res) => {
   try {
     console.log("Working 1");
-    const { linkId } = req.body;
-    if (linkId) {
-      const filter = { _id: linkId };
+    const { id } = req.body;
+    if (id) {
+      const filter = { _id: id };
       try {
         const result = await Link.deleteOne(filter);
-        if (result.deletedCount > 0) {
+        if (result) {
           return res.json({
-            status: "Success",
-            message: "Deleted link successful",
+            status: "success",
+            message: "Deleted link successfully",
+          });
+        } else {
+          return res.json({
+            status: "failed",
+            message: "Link not found",
           });
         }
-
       } catch (error) {
-        console.log("Working 2")
+        console.log("Working 2");
         return res.json({
           status: "failed",
           message: "Unable to delete the link",
-          error: error,
+          error: error.message,
         });
       }
+    } else {
+      return res.json({
+        status: "failed",
+        message: "Invalid link ID",
+      });
     }
   } catch (error) {
-    console.log("Working 2")
-
+    console.log("Working 2");
     return res.json({
       status: "failed",
       message: "Unable to delete the link",
-      error: error,
+      error: error.message,
     });
   }
 };
@@ -216,6 +224,36 @@ const viewLinks = async (req, res) => {
   }
 };
 
+const incrementClicks = async (req, res) => {
+  const { linkId } = req.body;
+  
+  if (!linkId) {
+    return res.json({ status: 'failed', error: "linkId is empty" });
+  }
+
+  try {
+    const link = await Link.findById(linkId);
+    
+    if (!link) {
+      return res.json({ status: 'failed', error: "Unable to find link" });
+    }
+
+    const updatedLink = await Link.findByIdAndUpdate(
+      linkId,
+      { $inc: { clicks: 1 } },
+      { new: true }  // Return the updated document
+    );
+
+    if (updatedLink) {
+      return res.json({ status: 'success', data: updatedLink });
+    } else {
+      return res.json({ status: 'failed', error: "Unable to update the value" });
+    }
+  } catch (error) {
+    return res.json({ status: 'failed', error: error.message });
+  }
+};
+
 module.exports = {
   postLink,
   patchLink,
@@ -224,5 +262,6 @@ module.exports = {
   getLinks,
   getUserLinks,
   getUserLinksLimit,
-  viewLinks
+  viewLinks,
+  incrementClicks
 };
