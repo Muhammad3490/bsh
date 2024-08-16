@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const Schema=new mongoose.Schema({
     userId:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
+         ref:"users", 
         required:true,
     },
     themeId:{

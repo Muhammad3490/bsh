@@ -1,15 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const {
-  postUser,
   patchUser,
   deleteUser,
   getUser,
   getAllUsers,
   getByUserName,
+  registerUser,
+  loginUser
 } = require("../Controllers/user");
-//post req
-router.post("/", postUser);
+
+
+
+
+router.post('/',registerUser);
+router.post('/login',loginUser)
 //patch req
 router.patch("/", patchUser);
 //delete req

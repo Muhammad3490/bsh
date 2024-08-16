@@ -9,7 +9,7 @@ const {
   getUserLinks,
   getUserLinksLimit,
   viewLinks,
-  incrementClicks
+  incrementClicks,
 } = require("../Controllers/link");
 //post req
 router.post("/", postLink);
@@ -18,14 +18,14 @@ router.patch("/", patchLink);
 //delete req
 router.delete("/", deleteLink);
 //get by id
-router.get("/", getLink);
+// router.get("/", getLink);
 //get all
 router.get("/all", getLinks);
 //get user links
-router.get("/:userId", getUserLinks);
+router.get("/", getUserLinks);
 //router limit
-router.get("/:userId/:limit",getUserLinksLimit);
-router.post('/click',incrementClicks);
-//view 
-router.get('/view',viewLinks);
+router.get("/:userId/:limit", getUserLinksLimit);
+router.post("/click", incrementClicks);
+//view
+router.get("/view", viewLinks);
 module.exports = router;

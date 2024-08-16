@@ -5,7 +5,8 @@ const LinkSchema = new mongoose.Schema({
     type: String,
   },
   ownerId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref:"Users",
     require: true,
   },
   url: {

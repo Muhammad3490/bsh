@@ -1,114 +1,71 @@
-const { data } = require("autoprefixer");
 const User = require("../Models/User");
 
-const postUser = async (req, res) => {
-  const { email, name, emailVerified, picture } = req.body;
-
-  // Check if email is provided
-  if (!email) {
-    return res.status(400).json({ error: "Email is required." });
-  }
+const registerUser = async (req, res) => {
+  const { username, password, email } = req.body;
+  console.log("Working");
+  if (!username || !password || !email)
+    return res.status(500).json({ error: "Fields missing" });
 
   try {
-    const checkUser = await User.findOne({ email: email });
-
-    if (!checkUser) {
-      // Validate required fields for creating a new user
-      if (name && email && picture && emailVerified) {
-        const newUser = await User.create({
-          name,
-          email,
-          emailVerified,
-          picture,
-          userName: email,
-        });
-        console.log("New user", newUser);
-        return res.json({
-          message: "Added user successfully",
-          user: newUser,
-        });
-      } else {
-        return res
-          .status(400)
-          .json({ error: "Unable to add user (invalid fields)." });
-      }
-    } else {
-      return res.json({
-        status: "success",
-        message: "User already exists",
-        user: checkUser,
-      });
-    }
+    const newUser = await User.create({
+      ...req.body,
+    });
+    return res.status(200).json({ message: "User created successfully" });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Unable to add user", details: error.message });
+    return res.status(400).json({ error: error });
+  }
+};
+
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password)
+    return res.status(500).json({ error: "Fields missing" });
+
+  try {
+    const token = await User.matchPasswords(email, password);
+    console.log(token);
+    return res.status(200).cookie(token);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
   }
 };
 
 const patchUser = async (req, res) => {
+  const user = req.user;
+  const { updates } = req.body;
+  console.log("User in function", user);
+
+  if (!updates) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
   try {
-    const { updates, userId } = req.body;
-    if (updates != null && userId != null) {
-      const filter = { _id: userId };
-      const values = { $set: updates };
-      try {
-        const result = await User.updateOne(filter, values);
-        if (result.modifiedCount > 0) {
-          const editedUser = await User.findById(userId);
-          return res.json({
-            status: "success",
-            message: "User updated successfully",
-            user: editedUser,
-          });
-        } else {
-          return res.json({
-            status: "Failed",
-            message: "Unable to update user (DB error)",
-          });
-        }
-      } catch (error) {
-        return res.json({
-          status: "Failed",
-          message: "Unable to update user (DB error)",
-        });
-      }
-    } else {
-      return res.json({
-        status: "Failed",
-        message: "Unable to update user (Missing fields)",
-      });
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      { $set: updates },
+      { new: true } // This option returns the updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
     }
+
+    return res.status(200).json({ user: updatedUser });
   } catch (error) {
-    return res.json({
-      status: "Failed",
-      message: "Unable to update user (Missing fields)",
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
 const deleteUser = async (req, res) => {
+  const user = req.user;
   try {
-    const { userId } = req.body;
-    if (userId) {
-      try {
-        const filter = { _id: userId };
-        const result = await User.deleteOne(filter);
-        if (result.deletedCount > 0) {
-          return res.json({
-            status: "Success",
-            message: "Deleted user successful",
-          });
-        }
-      } catch (error) {
-        return res.json({ status: "failed", message: "Unable to delete user" });
-      }
-    }
+    const deleteUser = await User.deleteOne({ _id: user._id });
+    if (!deleteUser)
+      return res.status(500).json({ error: "Unable to find user" });
+    return res.status(200).json({ message: "User deleted" });
   } catch (error) {
-    returnres.json({
-      status: "failed",
-      message: "Missing fields unable to delete user",
-    });
+    return res.status(400).json({ error });
   }
 };
 
@@ -172,4 +129,12 @@ const getByUserName = async (req, res) => {
   }
 };
 
-module.exports = { postUser, patchUser, deleteUser, getUser, getAllUsers,getByUserName};
+module.exports = {
+  patchUser,
+  deleteUser,
+  getUser,
+  getAllUsers,
+  getByUserName,
+  registerUser,
+  loginUser,
+};
