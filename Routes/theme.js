@@ -4,11 +4,11 @@ const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 const path = require("path");
-const Theme=require('../Models/Theme');
+const Theme = require("../Models/Theme");
 cloudinary.config({
-  cloud_name: "dbdagw6yv",
-  api_key: "293813444454576",
-  api_secret: "z992yhu3eUi5OY5G2wRAPk0DEbg",
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.cloud_api_key,
+  api_secret: process.env.cloud_api_secret,
 });
 
 const storage = multer.diskStorage({
@@ -60,7 +60,14 @@ const handleFileUpload = async (req, res, next) => {
   }
 };
 
-const { getThemes, postTheme,patchTheme} = require("../Controllers/theme");
+const {
+  getThemes,
+  postTheme,
+  patchTheme,
+  getSelectedTheme,
+  getThemeUser,
+  selectTheme
+} = require("../Controllers/theme");
 
 router.patch(
   "/",
@@ -69,7 +76,9 @@ router.patch(
   patchTheme
 );
 router.get("/", getThemes);
+router.get("/user", getThemeUser);
 router.post("/", upload.single("backgroundImage"), handleFileUpload, postTheme);
 router.get("/");
-
+router.get("/selected", getSelectedTheme);
+router.post("/selected",selectTheme)
 module.exports = router;

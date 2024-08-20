@@ -1,5 +1,16 @@
 const User = require("../Models/User");
-
+const fs = require("fs");
+const path = require("path");
+const { error } = require("console");
+const deleteImage = (filePath) => {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error("Error deleting file:", err);
+    } else {
+      console.log("File deleted successfully");
+    }
+  });
+};
 const registerUser = async (req, res) => {
   const { username, password, email } = req.body;
   console.log("Working");
@@ -18,44 +29,73 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(500).json({ error: "Fields missing" });
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required." });
+  }
 
   try {
     const token = await User.matchPasswords(email, password);
-    console.log(token);
-    return res.status(200).cookie(token);
+    res.cookie("auth_token", token, {
+      secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent only over HTTPS
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({ message: "Login successful." });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
+    console.error("Login error:", error);
+    return res.status(401).json({ error: "Invalid email or password." });
   }
 };
 
 const patchUser = async (req, res) => {
   const user = req.user;
   const { updates } = req.body;
-  console.log("User in function", user);
-
-  if (!updates) {
+  if (!user || !updates) {
     return res.status(400).json({ error: "Missing fields" });
   }
-
   try {
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       { $set: updates },
-      { new: true } // This option returns the updated document
+      { new: true }
     );
-
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
-
-    return res.status(200).json({ user: updatedUser });
+    return res.status(200).json({ data: updatedUser });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: error.message });
   }
 };
+
+const changeProfilePicture = async (req, res) => {
+  console.log("Working")
+  const user = req.user;
+  const profileImgUrl = req.profileImg;
+
+  if (!user || !profileImgUrl) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
+  try {
+    const updateUser = await User.findOneAndUpdate(
+      { _id: user._id }, // Filter
+      { profileImgUrl: profileImgUrl }, // Update object
+      { new: true } // Return the updated document
+    );
+    console.log("Updated user",updateUser)
+    if (!updateUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json({ data: updateUser });
+  } catch (error) {
+    return res.status(500).json({ error: "An error occurred while updating the profile picture" });
+  }
+};
+
 
 const deleteUser = async (req, res) => {
   const user = req.user;
@@ -137,4 +177,5 @@ module.exports = {
   getByUserName,
   registerUser,
   loginUser,
+  changeProfilePicture,
 };

@@ -1,20 +1,26 @@
-//configuration
-require("dotenv").config(); 
+require("dotenv").config();
 const express = require("express");
-//set up monoogoose
 const mongoose = require("mongoose");
 const path = require("path");
 const cors = require("cors");
-const { checkAuth } = require('./middleware/auth');
+const { checkAuth } = require("./Middleware/auth");
 const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//middleware usage
-app.use(cors());
+// Middleware usage
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5175",
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
-app.use(checkAuth('token'));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: false }));
 
@@ -28,18 +34,25 @@ const themeRouter = require("./Routes/theme");
 const userPageRouter = require("./Routes/view");
 const uploadRouter = require("./Routes/upload");
 
+// Apply checkAuth middleware globally except for /user/login
+app.use((req, res, next) => {
+  if (req.path === "/user/login" || req.path === '/user/signup') {
+    next(); // Skip checkAuth for /user/login
+  } else {
+    checkAuth("auth_token")(req, res, next); // Apply checkAuth for all other routes
+  }
+});
 
+// Routers
 app.use("/user", userRouter);
 app.use("/link", linkRouter);
 app.use("/theme", themeRouter);
 app.use("/", userPageRouter);
 app.use("/upload", uploadRouter);
+
 mongoose.set("strictQuery", false);
 
-
-
-
-
+// Connect to MongoDB
 const connectDB = async () => {
   try {
     const connection = await mongoose.connect(process.env.MONGO_URI, {

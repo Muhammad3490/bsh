@@ -1,4 +1,3 @@
-const { data } = require("autoprefixer");
 const Link = require("../Models/Link");
 const User = require("../Models/User");
 
@@ -99,12 +98,12 @@ const getLinks = async (req, res) => {
 
 // Backend route to fetch user links
 const getUserLinks = async (req, res) => {
+  console.log("get links working")
   const user = req.user;
   if (!user)
     return res.status(500).json({ error: "user is required to get links" });
   try {
     const links = await Link.find({ ownerId: user._id });
-    console.log(links);
     return res.status(200).json({ data: links, message: "get success" });
   } catch (error) {
     return res.status(400).json({ error: error });

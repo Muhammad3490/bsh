@@ -87,7 +87,8 @@ const userSchema = new Schema(
     },
     bio:{
       type:String,
-    }
+    },
+    localImg:String
   },
   { timestamps: true }
 );
