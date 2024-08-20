@@ -37,7 +37,11 @@ const loginUser = async (req, res) => {
   try {
     const token = await User.matchPasswords(email, password);
     res.cookie("auth_token", token, {
+      // secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent only over HTTPS
+      // maxAge: 24 * 60 * 60 * 1000,
       secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent only over HTTPS
+      httpOnly: true, // Ensures the cookie is not accessible via client-side JavaScript
+      sameSite: "None", // Ensures the cookie is sent with cross-origin requests
       maxAge: 24 * 60 * 60 * 1000,
     });
 
