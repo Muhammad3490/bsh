@@ -36,16 +36,16 @@ const loginUser = async (req, res) => {
 
   try {
     const token = await User.matchPasswords(email, password);
-    res.cookie("auth_token", token, {
-      // secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent only over HTTPS
-      // maxAge: 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent only over HTTPS
-      httpOnly: true, // Ensures the cookie is not accessible via client-side JavaScript
-      sameSite: "None", // Ensures the cookie is sent with cross-origin requests
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    // res.cookie("auth_token", token, {
+    //   // secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent only over HTTPS
+    //   // maxAge: 24 * 60 * 60 * 1000,
+    //   secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent only over HTTPS
+    //   httpOnly: true, // Ensures the cookie is not accessible via client-side JavaScript
+    //   sameSite: "None", // Ensures the cookie is sent with cross-origin requests
+    //   maxAge: 24 * 60 * 60 * 1000,
+    // });
 
-    return res.status(200).json({ message: "Login successful." });
+    return res.status(200).json({auth_token:token ,message: "Login successful." });
   } catch (error) {
     console.error("Login error:", error);
     return res.status(401).json({ error: "Invalid email or password." });
