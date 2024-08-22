@@ -90,7 +90,7 @@ const userMedia = async (req, res) => {
   if (!user) return res.status(400).status({ error: "missing fields" });
   try {
     const userMedia = await Media.find({ userId: user._id });
-
+    console.log(userMedia)
     return res.status(200).json({ data: userMedia, message: "get success" });
   } catch (error) {
     return res.status(500).json({ error });
