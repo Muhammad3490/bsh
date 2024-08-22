@@ -231,7 +231,7 @@ const deleteTheme = async (req, res) => {
     return res.status(500).json({ error: "missing fields" });
 
   try {
-    const deleteTheme = await Theme.findByIdAndDelete(linkId);
+    const deleteTheme = await Theme.findByIdAndDelete(themeId);
     console.log("Delete theme",deleteTheme)
     return res.status(200).json({ message: "Delete successfull" });
   } catch (error) {
