@@ -1,5 +1,6 @@
 const Media = require("../Models/Media");
 const postMedia = async (req, res) => {
+    console.log("Working media")
   const user = req.user;
   const { title, src } = req.body;
   if (!user || !title || !src)
@@ -10,9 +11,10 @@ const postMedia = async (req, res) => {
       ...req.body,
       userId: user._id,
     });
-
+     console.log("New Media")
     return res.status(200).json({ message: "create success", data: newMedia });
   } catch (error) {
+    console.log("Error",error)
     return res.status(500).json({ error });
   }
 };
