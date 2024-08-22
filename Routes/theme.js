@@ -66,7 +66,8 @@ const {
   patchTheme,
   getSelectedTheme,
   getThemeUser,
-  selectTheme
+  selectTheme,
+  deleteTheme
 } = require("../Controllers/theme");
 
 router.patch(
@@ -81,4 +82,5 @@ router.post("/", upload.single("backgroundImage"), handleFileUpload, postTheme);
 router.get("/");
 router.get("/selected", getSelectedTheme);
 router.post("/selected",selectTheme)
+router.delete("/",deleteTheme)
 module.exports = router;
