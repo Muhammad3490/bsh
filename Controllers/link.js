@@ -32,6 +32,7 @@ const patchLink = async (req, res) => {
     const update = { $set: updates };
     const result = await Link.findByIdAndUpdate(linkId, update, { new: true });
 
+    console.log(result)
     if (!result) {
       return res.status(404).json({ error: "Link not found" });
     }

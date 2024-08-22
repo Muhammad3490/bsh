@@ -32,8 +32,7 @@ app.set("views", path.join(__dirname, "View"));
 const userRouter = require("./Routes/user");
 const linkRouter = require("./Routes/link");
 const themeRouter = require("./Routes/theme");
-const userPageRouter = require("./Routes/view");
-const uploadRouter = require("./Routes/upload");
+const mediaRouter=require("./Routes/media")
 
 // Apply checkAuth middleware globally except for /user/login
 app.use((req, res, next) => {
@@ -48,8 +47,7 @@ app.use((req, res, next) => {
 app.use("/user", userRouter);
 app.use("/link", linkRouter);
 app.use("/theme", themeRouter);
-app.use("/", userPageRouter);
-app.use("/upload", uploadRouter);
+app.use('/media',mediaRouter);
 
 mongoose.set("strictQuery", false);
 
