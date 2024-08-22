@@ -30,11 +30,13 @@ const getThemes = async (req, res) => {
 };
 const getThemeUser = async (req, res) => {
   const user = req.user;
+  console.log("Working")
   if (!user) {
     return res.status(500).json({ error: "User is required." });
   }
   try {
     const themes = await Theme.find({ userId: user._id });
+    console.log("Themes",themes)
     return res.status(200).json({ data: themes });
   } catch {
     return res.status(400).json({ error });
@@ -230,6 +232,7 @@ const deleteTheme = async (req, res) => {
 
   try {
     const deleteTheme = await Theme.findByIdAndDelete(linkId);
+    console.log("Delete theme",deleteTheme)
     return res.status(200).json({ message: "Delete successfull" });
   } catch (error) {
     return res.status(400).json({ error: error });
