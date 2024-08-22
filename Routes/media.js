@@ -9,11 +9,11 @@ const {
   deleteMedia,
   userMedia,
 } = require("../Controllers/media");
-router.post("/media", postMedia);
-router.get("/media", getAllMedia);
-router.get("/media/:id", getMediaById);
-router.get("/media/user", userMedia);
-router.put("/media/:id", updateMedia);
-router.delete("/media/:id", deleteMedia);
+router.post("/", postMedia);
+router.get("/", getAllMedia);
+router.get("/:id", getMediaById);
+router.get("/user", userMedia);
+router.put("/:id", updateMedia);
+router.delete("//:id", deleteMedia);
 
 module.exports = router;
