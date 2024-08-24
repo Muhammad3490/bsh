@@ -1,7 +1,7 @@
 const Media = require("../Models/Media");
-const User=require('../Models/User')
+const User = require("../Models/User");
 const postMedia = async (req, res) => {
-    console.log("Working media")
+  console.log("Working media");
   const user = req.user;
   const { title, src } = req.body;
   if (!user || !title || !src)
@@ -12,10 +12,10 @@ const postMedia = async (req, res) => {
       ...req.body,
       userId: user._id,
     });
-     console.log("New Media")
+    console.log("New Media");
     return res.status(200).json({ message: "create success", data: newMedia });
   } catch (error) {
-    console.log("Error",error)
+    console.log("Error", error);
     return res.status(500).json({ error });
   }
 };
@@ -91,26 +91,39 @@ const userMedia = async (req, res) => {
   if (!user) return res.status(400).status({ error: "missing fields" });
   try {
     const userMedia = await Media.find({ userId: user._id });
-    console.log(userMedia)
+    console.log(userMedia);
     return res.status(200).json({ data: userMedia, message: "get success" });
   } catch (error) {
     return res.status(500).json({ error });
   }
 };
-const getByUsername=async(req,res)=>{
-  const {username}=req.params
-  console.log("Working media usenamae")
-  if(!username) return res.status(400).json({error:'missing fields'});
-  try {
-    const user=await User.findOne({username:username});
-    const media=await Media.find({userId:user._id});
-    console.log("Media",media,'user',user);
-    return res.status(200).json({data:media})
-  } catch (error) {
-    return res.status(500).json({error});
+
+const getByUserName = async (req, res) => {
+  const { username } = req.query;
+
+  if (!username) {
+    return res.status(400).json({ error: "Username is required" });
   }
-  
-}
+
+  try {
+    // Find the user by username
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find media associated with the user's ID
+    const media = await Media.find({ userId: user._id });
+
+    return res.status(200).json({ data: media, message: "Media fetched successfully" });
+  } catch (error) {
+    console.error("Error fetching media by username:", error); // Log the error details
+    return res.status(500).json({ error: "Server error", details: error.message }); // Include error details in the response
+  }
+};
+
+
 
 module.exports = {
   postMedia,
@@ -119,5 +132,5 @@ module.exports = {
   getAllMedia,
   getMediaById,
   userMedia,
-  getByUsername
+  getByUserName
 };

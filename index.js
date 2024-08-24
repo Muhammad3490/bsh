@@ -42,7 +42,7 @@ app.use((req, res, next) => {
     req.path == "/user/get-by-username" ||
     req.path == "/link/get-by-username" ||
     req.path == "/theme/get-by-username" ||
-    req.path=='/media/get-by-username'
+    req.path == "/media/get-by-username"
   ) {
     next(); // Skip checkAuth for /user/login
   } else {

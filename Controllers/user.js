@@ -156,8 +156,8 @@ const getAllUsers = async (req, res) => {
 };
 
 const getByUserName = async (req, res) => {
-  const { username } = req.body;
-  console.log("Get by username")
+  const { username } = req.query;
+  console.log("Get by username",username)
 
   if (!username) {
     return res.json({ status: "failed", message: "UserName is empty" });

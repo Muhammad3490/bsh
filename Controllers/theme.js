@@ -188,11 +188,13 @@ const deleteTheme = async (req, res) => {
   }
 };
 const getByUserName = async (req, res) => {
-  const { username } = req.body;
+  const { username } = req.query;
+  console.log("theme",username)
   if (!username) return res.status(400).json({ error: "missing fields" });
   try {
     const user = await User.findOne({ username: username });
     const theme = await Theme.findOne({ userId: user._id, selected: true });
+    console.log(theme);
     return res.status(200).json({ data: theme });
   } catch (error) {
     return res.status(500).json({ error });

@@ -188,7 +188,7 @@ const incrementClicks = async (req, res) => {
   }
 };
 const getByUserName=async(req,res)=>{
-  const {username}=req.body;
+  const {username}=req.query;
   if(!username) return res.status(400).json({error:"missing fields"})
   try {
     const user=await User.findOne({username:username});

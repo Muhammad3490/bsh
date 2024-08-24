@@ -3,17 +3,17 @@ const router = express.Router();
 
 const {
   postMedia,
-  getAllMedia,
   getMediaById,
   updateMedia,
   deleteMedia,
   userMedia,
-  getByUsername,
+  mediaUsername,
+  getByUserName,
 } = require("../Controllers/media");
 router.post("/", postMedia);
 router.get("/:id", getMediaById);
 router.get("/", userMedia);
-router.get('/get-by-username',getByUsername)
+router.get('/get-by-username',getByUserName)
 router.put("/:id", updateMedia);
 router.delete("/:id", deleteMedia);
 
