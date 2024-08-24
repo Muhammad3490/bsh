@@ -10,6 +10,7 @@ const {
   getUserLinksLimit,
   viewLinks,
   incrementClicks,
+  getByUserName
 } = require("../Controllers/link");
 //post req
 router.post("/", postLink);
@@ -23,6 +24,7 @@ router.delete("/", deleteLink);
 router.get("/all", getLinks);
 //get user links
 router.get("/", getUserLinks);
+router.get('/get-by-username',getByUserName)
 //router limit
 router.get("/:userId/:limit", getUserLinksLimit);
 router.post("/click", incrementClicks);

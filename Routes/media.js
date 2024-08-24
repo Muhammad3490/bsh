@@ -8,11 +8,13 @@ const {
   updateMedia,
   deleteMedia,
   userMedia,
+  getByUsername,
 } = require("../Controllers/media");
 router.post("/", postMedia);
 router.get("/:id", getMediaById);
 router.get("/", userMedia);
+router.get('/get-by-username',getByUsername)
 router.put("/:id", updateMedia);
-router.delete("//:id", deleteMedia);
+router.delete("/:id", deleteMedia);
 
 module.exports = router;

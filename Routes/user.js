@@ -73,5 +73,5 @@ router.get("/all", getAllUsers);
 
 router.post('/picture',upload.single("profileImage"),handleFileUpload,changeProfilePicture)
 router.patch('/picture',)
-router.get("/:userName", getByUserName);
+router.get("/get-by-username", getByUserName);
 module.exports = router;

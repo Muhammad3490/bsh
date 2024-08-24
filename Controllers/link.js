@@ -187,6 +187,18 @@ const incrementClicks = async (req, res) => {
     return res.json({ status: "failed", error: error.message });
   }
 };
+const getByUserName=async(req,res)=>{
+  const {username}=req.body;
+  if(!username) return res.status(400).json({error:"missing fields"})
+  try {
+    const user=await User.findOne({username:username});
+    const links=await Link.find({ownerId:user._id});
+    return res.status(200).json({data:links})
+  } catch (error) {
+    return res.status(500).json({error});
+  }
+
+}
 
 module.exports = {
   postLink,
@@ -198,4 +210,5 @@ module.exports = {
   getUserLinksLimit,
   viewLinks,
   incrementClicks,
+  getByUserName
 };

@@ -156,13 +156,14 @@ const getAllUsers = async (req, res) => {
 };
 
 const getByUserName = async (req, res) => {
-  const { userName } = req.params;
+  const { username } = req.body;
+  console.log("Get by username")
 
-  if (!userName) {
+  if (!username) {
     return res.json({ status: "failed", message: "UserName is empty" });
   }
   try {
-    const result = await User.findOne({ userName: userName });
+    const result = await User.findOne({ username: username });
     if (result) {
       return res.json({ status: "success", data: result });
     } else {

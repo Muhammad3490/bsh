@@ -1,4 +1,5 @@
 const Media = require("../Models/Media");
+const User=require('../Models/User')
 const postMedia = async (req, res) => {
     console.log("Working media")
   const user = req.user;
@@ -96,6 +97,20 @@ const userMedia = async (req, res) => {
     return res.status(500).json({ error });
   }
 };
+const getByUsername=async(req,res)=>{
+  const {username}=req.params
+  console.log("Working media usenamae")
+  if(!username) return res.status(400).json({error:'missing fields'});
+  try {
+    const user=await User.findOne({username:username});
+    const media=await Media.find({userId:user._id});
+    console.log("Media",media,'user',user);
+    return res.status(200).json({data:media})
+  } catch (error) {
+    return res.status(500).json({error});
+  }
+  
+}
 
 module.exports = {
   postMedia,
@@ -104,4 +119,5 @@ module.exports = {
   getAllMedia,
   getMediaById,
   userMedia,
+  getByUsername
 };

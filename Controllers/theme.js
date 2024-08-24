@@ -2,11 +2,8 @@ const Theme = require("../Models/Theme");
 const multer = require("multer");
 const upload = multer({ dest: "Themeuploads/" });
 const User = require("../Models/User");
-const SelectedTheme = require("../Models/SelectedTheme");
-const mongoose = require("mongoose");
 const fs = require("fs");
-const path = require("path");
-const { error } = require("console");
+
 const deleteImage = (filePath) => {
   fs.unlink(filePath, (err) => {
     if (err) {
@@ -30,20 +27,20 @@ const getThemes = async (req, res) => {
 };
 const getThemeUser = async (req, res) => {
   const user = req.user;
-  console.log("Working")
+  console.log("Working");
   if (!user) {
     return res.status(500).json({ error: "User is required." });
   }
   try {
     const themes = await Theme.find({ userId: user._id });
-    console.log("Themes",themes)
+    console.log("Themes", themes);
     return res.status(200).json({ data: themes });
   } catch {
     return res.status(400).json({ error });
   }
 };
 const selectTheme = async (req, res) => {
-  console.log("Working")
+  console.log("Working");
   const user = req.user;
   const { themeId } = req.body;
 
@@ -125,59 +122,13 @@ const postTheme = async (req, res) => {
       return res.status(400).json({ error: "Unable to create theme" });
     return res.status(200).json({ message: "Post success", data: newTheme });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(400).json({ error });
   }
 };
 
-// const patchTheme = async (req, res) => {
-//   const user = req.user;
-//   let { updates, themeId } = req.body;
-
-//   if (!user || !themeId) {
-//     return res.status(500).json({ error: "Missing fields" });
-//   }
-
-//   try {
-//     const theme = await Theme.findById(themeId);
-//     if (!theme) {
-//       return res.status(404).json({ error: "Theme not found" });
-//     }
-
-//     // Check if the background image has changed
-//     if (req.cloudinaryUrl && theme.backgroundImageUrl !== req.cloudinaryUrl) {
-//       deleteImage(`ThemeUploads/bgImages/${theme.localImg}`);
-//       console.log("local Image", req.localImg);
-//       updates = {
-//         ...updates,
-//         backgroundImageUrl: req.cloudinaryUrl,
-//         local: req.localImg,
-//       };
-//     }
-
-//     const updatedTheme = await Theme.findOneAndUpdate(
-//       { _id: themeId },
-//       { $set: updates },
-//       { new: true }
-//     );
-
-//     if (updatedTheme) {
-//       return res
-//         .status(200)
-//         .json({ message: "Update success", data: updatedTheme });
-//     } else {
-//       return res.status(400).json({ error: "Unable to update theme" });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(400).json({ error });
-//   }
-// };
-
-
-
 const patchTheme = async (req, res) => {
-  console.log("patch theme",req.body)
+  console.log("patch theme", req.body);
   const user = req.user;
   let { updates, themeId } = req.body;
 
@@ -208,7 +159,7 @@ const patchTheme = async (req, res) => {
       { $set: updates },
       { new: true }
     );
-    console.log("updated theme")
+    console.log("updated theme");
 
     if (updatedTheme) {
       return res.status(200).json({ status: "success", data: updatedTheme });
@@ -221,8 +172,6 @@ const patchTheme = async (req, res) => {
   }
 };
 
-
-
 const deleteTheme = async (req, res) => {
   const { themeId } = req.body;
   const user = req.user;
@@ -232,10 +181,21 @@ const deleteTheme = async (req, res) => {
 
   try {
     const deleteTheme = await Theme.findByIdAndDelete(themeId);
-    console.log("Delete theme",deleteTheme)
+    console.log("Delete theme", deleteTheme);
     return res.status(200).json({ message: "Delete successfull" });
   } catch (error) {
     return res.status(400).json({ error: error });
+  }
+};
+const getByUserName = async (req, res) => {
+  const { username } = req.body;
+  if (!username) return res.status(400).json({ error: "missing fields" });
+  try {
+    const user = await User.findOne({ username: username });
+    const theme = await Theme.findOne({ userId: user._id, selected: true });
+    return res.status(200).json({ data: theme });
+  } catch (error) {
+    return res.status(500).json({ error });
   }
 };
 
@@ -246,5 +206,6 @@ module.exports = {
   deleteTheme,
   getSelectedTheme,
   getThemeUser,
-  selectTheme
+  selectTheme,
+  getByUserName,
 };

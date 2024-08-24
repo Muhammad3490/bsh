@@ -15,7 +15,7 @@ app.use(
       "http://localhost:5173",
       "http://localhost:5174",
       "http://localhost:5175",
-      "https://backslashs.netlify.app"
+      "https://backslashs.netlify.app",
     ],
     credentials: true,
   })
@@ -32,11 +32,18 @@ app.set("views", path.join(__dirname, "View"));
 const userRouter = require("./Routes/user");
 const linkRouter = require("./Routes/link");
 const themeRouter = require("./Routes/theme");
-const mediaRouter=require("./Routes/media")
+const mediaRouter = require("./Routes/media");
 
 // Apply checkAuth middleware globally except for /user/login
 app.use((req, res, next) => {
-  if (req.path === "/user/login" || req.path === '/user/signup') {
+  if (
+    req.path === "/user/login" ||
+    req.path === "/user/signup" ||
+    req.path == "/user/get-by-username" ||
+    req.path == "/link/get-by-username" ||
+    req.path == "/theme/get-by-username" ||
+    req.path=='/media/get-by-username'
+  ) {
     next(); // Skip checkAuth for /user/login
   } else {
     checkAuth("auth_token")(req, res, next); // Apply checkAuth for all other routes
@@ -47,7 +54,7 @@ app.use((req, res, next) => {
 app.use("/user", userRouter);
 app.use("/link", linkRouter);
 app.use("/theme", themeRouter);
-app.use('/media',mediaRouter);
+app.use("/media", mediaRouter);
 
 mongoose.set("strictQuery", false);
 
