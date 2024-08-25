@@ -10,7 +10,8 @@ function createTokenForUser(user) {
     bio:user.bio,
     profileImgUrl: user.profileImgUrl,
     role: user.role,
-    localImg:user.localImg
+    localImg:user.localImg,
+    profileViews:user.profileViews
   };
   const token = jwt.sign(payload, secret);
   return token;

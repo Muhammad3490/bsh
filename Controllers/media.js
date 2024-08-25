@@ -116,14 +116,16 @@ const getByUserName = async (req, res) => {
     // Find media associated with the user's ID
     const media = await Media.find({ userId: user._id });
 
-    return res.status(200).json({ data: media, message: "Media fetched successfully" });
+    return res
+      .status(200)
+      .json({ data: media, message: "Media fetched successfully" });
   } catch (error) {
     console.error("Error fetching media by username:", error); // Log the error details
-    return res.status(500).json({ error: "Server error", details: error.message }); // Include error details in the response
+    return res
+      .status(500)
+      .json({ error: "Server error", details: error.message }); // Include error details in the response
   }
 };
-
-
 
 module.exports = {
   postMedia,
@@ -132,5 +134,5 @@ module.exports = {
   getAllMedia,
   getMediaById,
   userMedia,
-  getByUserName
+  getByUserName,
 };

@@ -57,13 +57,14 @@
 const { Schema, model } = require("mongoose");
 const { createHmac, randomBytes } = require("node:crypto");
 const { validateToken, createTokenForUser } = require("../Services/auth");
+const { type } = require("node:os");
 const userSchema = new Schema(
   {
     username: {
       type: String,
       required: true,
     },
-    name:String,
+    name: String,
     email: {
       type: String,
       required: true,
@@ -85,10 +86,14 @@ const userSchema = new Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    bio:{
-      type:String,
+    bio: {
+      type: String,
     },
-    localImg:String
+    localImg: String,
+    profileViews: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
@@ -110,7 +115,7 @@ userSchema.pre("save", function (next) {
 
 //creating a virtual function to check the password of the user
 userSchema.static("matchPasswords", async function (email, password) {
-  const user = await this.findOne({email})
+  const user = await this.findOne({ email });
   if (!user) throw new Error("User not found");
 
   const salt = user.salt;
