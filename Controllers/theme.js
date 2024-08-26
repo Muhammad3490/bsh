@@ -173,7 +173,7 @@ const patchTheme = async (req, res) => {
 };
 
 const deleteTheme = async (req, res) => {
-  const { themeId } = req.body;
+  const { themeId } = req.params;
   const user = req.user;
 
   if (!user || !themeId)

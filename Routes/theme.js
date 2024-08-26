@@ -84,5 +84,5 @@ router.get("/");
 router.get("/selected", getSelectedTheme);
 router.get('/get-by-username',getByUserName)
 router.post("/selected",selectTheme)
-router.delete("/",deleteTheme)
+router.delete("/:themeId",deleteTheme)
 module.exports = router;

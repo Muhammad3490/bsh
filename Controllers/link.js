@@ -32,7 +32,7 @@ const patchLink = async (req, res) => {
     const update = { $set: updates };
     const result = await Link.findByIdAndUpdate(linkId, update, { new: true });
 
-    console.log(result)
+    console.log(result);
     if (!result) {
       return res.status(404).json({ error: "Link not found" });
     }
@@ -44,7 +44,7 @@ const patchLink = async (req, res) => {
 
 const deleteLink = async (req, res) => {
   const user = req.user;
-  const { linkId } = req.body;
+  const { linkId } = req.params;
 
   if (!user || !linkId) {
     return res.status(400).json({ error: "Missing field" });
@@ -99,7 +99,7 @@ const getLinks = async (req, res) => {
 
 // Backend route to fetch user links
 const getUserLinks = async (req, res) => {
-  console.log("get links working")
+  console.log("get links working");
   const user = req.user;
   if (!user)
     return res.status(500).json({ error: "user is required to get links" });
@@ -187,18 +187,17 @@ const incrementClicks = async (req, res) => {
     return res.json({ status: "failed", error: error.message });
   }
 };
-const getByUserName=async(req,res)=>{
-  const {username}=req.query;
-  if(!username) return res.status(400).json({error:"missing fields"})
+const getByUserName = async (req, res) => {
+  const { username } = req.query;
+  if (!username) return res.status(400).json({ error: "missing fields" });
   try {
-    const user=await User.findOne({username:username});
-    const links=await Link.find({ownerId:user._id});
-    return res.status(200).json({data:links})
+    const user = await User.findOne({ username: username });
+    const links = await Link.find({ ownerId: user._id });
+    return res.status(200).json({ data: links });
   } catch (error) {
-    return res.status(500).json({error});
+    return res.status(500).json({ error });
   }
-
-}
+};
 
 module.exports = {
   postLink,
@@ -210,5 +209,5 @@ module.exports = {
   getUserLinksLimit,
   viewLinks,
   incrementClicks,
-  getByUserName
+  getByUserName,
 };

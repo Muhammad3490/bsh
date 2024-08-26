@@ -65,7 +65,7 @@ router.post("/login", loginUser);
 
 router.patch("/", patchUser);
 
-router.delete("/", deleteUser);
+router.delete("/:userId", deleteUser);
 
 router.get("/", getUser);
 
