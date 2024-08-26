@@ -14,7 +14,7 @@ router.post("/", postMedia);
 router.get("/:id", getMediaById);
 router.get("/", userMedia);
 router.get('/get-by-username',getByUserName)
-router.put("/:id", updateMedia);
+router.patch("/:id", updateMedia);
 router.delete("/:id", deleteMedia);
 
 module.exports = router;
